@@ -8,7 +8,6 @@ namespace LabVariant1
         {
             Console.WriteLine("Lab Variant 1 - Student/Exam demo (equality, hashing, deep copy)");
 
-            // Person equality and hash-code demonstration
             var p1 = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
             var p2 = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
             Console.WriteLine($"p1 reference equals p2: {ReferenceEquals(p1, p2)}");
@@ -16,7 +15,6 @@ namespace LabVariant1
             Console.WriteLine($"p1.Equals(p2): {p1.Equals(p2)}");
             Console.WriteLine($"p1 hash: {p1.GetHashCode()}, p2 hash: {p2.GetHashCode()}");
 
-            // Create a student and populate exams
             var student = new Student(new Person("Olena", "Ivanova", new DateTime(1999, 3, 2)), Education.Bachelor, 202);
             student.AddExams(
                 new Exam("Mathematics", 95, DateTime.Now.AddDays(-30)),
@@ -26,15 +24,13 @@ namespace LabVariant1
             Console.WriteLine("Original student:");
             Console.WriteLine(student.ToString());
 
-            // Deep copy student and demonstrate independence
             var copy = (Student)student.DeepCopy();
             Console.WriteLine("Deep-copied student:");
             Console.WriteLine(copy.ToString());
 
-            // Modify original exams and show copy is unchanged
             if (student.Exams.Length > 0)
             {
-                student.Exams[0].Score = 50; // modify original
+                student.Exams[0].Score = 50; 
             }
             Console.WriteLine("After modifying original student's first exam score:");
             Console.WriteLine("Original:");
@@ -42,7 +38,6 @@ namespace LabVariant1
             Console.WriteLine("Copy (should be unchanged):");
             Console.WriteLine(copy.ToString());
 
-            // Demonstrate invalid group number handling
             try
             {
                 var bad = new Student(new Person("Bad", "Group", new DateTime(2001,1,1)), Education.Bachelor, 5);
@@ -52,7 +47,6 @@ namespace LabVariant1
                 Console.WriteLine($"Caught exception for invalid group: {ex.Message}");
             }
 
-            // Timing experiments
             Console.WriteLine();
             Console.WriteLine("Timing array element operations. Enter nRows and nColumns separated by space (e.g. 100 100):");
             var input = Console.ReadLine() ?? "10 10";
@@ -64,7 +58,6 @@ namespace LabVariant1
             int total = nRows * nCols;
             Console.WriteLine($"nRows={nRows}, nCols={nCols}, total elements={total}");
 
-            // Prepare arrays of Exam objects
             var rnd = new Random(42);
             var oneD = new Exam[total];
             for (int i = 0; i < total; i++) oneD[i] = new Exam("Subject", rnd.Next(50, 101), DateTime.Now);
@@ -81,7 +74,6 @@ namespace LabVariant1
                 for (int j = 0; j < nCols; j++) jagged[i][j] = new Exam("Subject", rnd.Next(50, 101), DateTime.Now);
             }
 
-            // Operation to measure: increase Score by 1 for each exam
 
             int before, after;
 
