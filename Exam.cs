@@ -2,11 +2,11 @@ using System;
 
 namespace LabVariant1
 {
-    public class Exam
+    public class Exam : IDateAndCopy
     {
         public string Subject { get; set; }
         public int Score { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; init; }
 
         public Exam(string subject, int score, DateTime date)
         {
@@ -20,6 +20,11 @@ namespace LabVariant1
             Subject = string.Empty;
             Score = 0;
             Date = DateTime.MinValue;
+        }
+
+        public object DeepCopy()
+        {
+            return new Exam(Subject, Score, Date);
         }
 
         public override string ToString()

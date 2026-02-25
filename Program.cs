@@ -6,32 +6,51 @@ namespace LabVariant1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Lab Variant 1 - Student/Exam timing demo");
+            Console.WriteLine("Lab Variant 1 - Student/Exam demo (equality, hashing, deep copy)");
 
-            // Create a sample student and print ToShortString
-            var p = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
-            var student = new Student(p, Education.Master, 101);
-            Console.WriteLine("Student ToShortString():");
-            Console.WriteLine(student.ToShortString());
+            // Person equality and hash-code demonstration
+            var p1 = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
+            var p2 = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
+            Console.WriteLine($"p1 reference equals p2: {ReferenceEquals(p1, p2)}");
+            Console.WriteLine($"p1 == p2: {p1 == p2}");
+            Console.WriteLine($"p1.Equals(p2): {p1.Equals(p2)}");
+            Console.WriteLine($"p1 hash: {p1.GetHashCode()}, p2 hash: {p2.GetHashCode()}");
 
-            // Show enum values
-            Console.WriteLine($"Education indices: Master={(int)Education.Master}, Bachelor={(int)Education.Bachelor}, SecondEducation={(int)Education.SecondEducation}");
-
-            // Assign properties and print ToString
-            student.PersonData = new Person("Olena", "Ivanova", new DateTime(1999, 3, 2));
-            student.EducationForm = Education.Bachelor;
-            student.GroupNumber = 202;
-            Console.WriteLine("After assigning properties, ToString():");
-            Console.WriteLine(student.ToString());
-
-            // Add exams
+            // Create a student and populate exams
+            var student = new Student(new Person("Olena", "Ivanova", new DateTime(1999, 3, 2)), Education.Bachelor, 202);
             student.AddExams(
                 new Exam("Mathematics", 95, DateTime.Now.AddDays(-30)),
                 new Exam("Physics", 88, DateTime.Now.AddDays(-20)),
                 new Exam("Programming", 100, DateTime.Now.AddDays(-10))
             );
-            Console.WriteLine("After AddExams():");
+            Console.WriteLine("Original student:");
             Console.WriteLine(student.ToString());
+
+            // Deep copy student and demonstrate independence
+            var copy = (Student)student.DeepCopy();
+            Console.WriteLine("Deep-copied student:");
+            Console.WriteLine(copy.ToString());
+
+            // Modify original exams and show copy is unchanged
+            if (student.Exams.Length > 0)
+            {
+                student.Exams[0].Score = 50; // modify original
+            }
+            Console.WriteLine("After modifying original student's first exam score:");
+            Console.WriteLine("Original:");
+            Console.WriteLine(student.ToString());
+            Console.WriteLine("Copy (should be unchanged):");
+            Console.WriteLine(copy.ToString());
+
+            // Demonstrate invalid group number handling
+            try
+            {
+                var bad = new Student(new Person("Bad", "Group", new DateTime(2001,1,1)), Education.Bachelor, 5);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine($"Caught exception for invalid group: {ex.Message}");
+            }
 
             // Timing experiments
             Console.WriteLine();

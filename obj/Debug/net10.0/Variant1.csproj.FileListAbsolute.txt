@@ -12,3 +12,4 @@ D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\refint\Vari
 D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.pdb
 D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.genruntimeconfig.cache
 D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\ref\Variant1.dll
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.sourcelink.json
