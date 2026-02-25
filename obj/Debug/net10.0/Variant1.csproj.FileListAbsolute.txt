@@ -1,0 +1,14 @@
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\bin\Debug\net10.0\Variant1.exe
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\bin\Debug\net10.0\Variant1.deps.json
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\bin\Debug\net10.0\Variant1.runtimeconfig.json
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\bin\Debug\net10.0\Variant1.dll
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\bin\Debug\net10.0\Variant1.pdb
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.GeneratedMSBuildEditorConfig.editorconfig
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.AssemblyInfoInputs.cache
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.AssemblyInfo.cs
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.csproj.CoreCompileInputs.cache
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.dll
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\refint\Variant1.dll
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.pdb
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\Variant1.genruntimeconfig.cache
+D:\PlatformCooperativeInformation(PCI)\LabVariant1\obj\Debug\net10.0\ref\Variant1.dll
