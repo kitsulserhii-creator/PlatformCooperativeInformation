@@ -2,7 +2,7 @@ using System;
 
 namespace LabVariant1
 {
-    public class Person : IDateAndCopy
+    public class Person : IDateAndCopy, IComparable<Person>, System.Collections.Generic.IComparer<Person>
     {
         protected string _firstName;
         protected string _lastName;
@@ -59,6 +59,20 @@ namespace LabVariant1
         public virtual object DeepCopy()
         {
             return new Person(FirstName, LastName, BirthDate);
+        }
+
+        public int CompareTo(Person? other)
+        {
+            if (other == null) return 1;
+            return string.Compare(LastName, other.LastName, StringComparison.Ordinal);
+        }
+
+        public int Compare(Person? x, Person? y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (x is null) return -1;
+            if (y is null) return 1;
+            return DateTime.Compare(x.BirthDate, y.BirthDate);
         }
 
         public override bool Equals(object? obj)

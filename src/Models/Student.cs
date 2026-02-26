@@ -15,14 +15,16 @@ namespace LabVariant1
         private Person _person;
         private Education _education;
         private int _groupNumber;
-        private Exam[] _exams;
+        private System.Collections.Generic.List<Test> _tests;
+        private System.Collections.Generic.List<Exam> _exams;
 
         public Student(Person person, Education education, int groupNumber)
         {
             _person = person ?? new Person();
             _education = education;
             GroupNumber = groupNumber;
-            _exams = Array.Empty<Exam>();
+            _tests = new System.Collections.Generic.List<Test>();
+            _exams = new System.Collections.Generic.List<Exam>();
         }
 
         public Student()
@@ -30,7 +32,8 @@ namespace LabVariant1
             _person = new Person();
             _education = Education.Bachelor;
             _groupNumber = 0;
-            _exams = Array.Empty<Exam>();
+            _tests = new System.Collections.Generic.List<Test>();
+            _exams = new System.Collections.Generic.List<Exam>();
         }
 
         public Person PersonData
@@ -55,17 +58,23 @@ namespace LabVariant1
             }
         }
 
-        public Exam[] Exams
+        public System.Collections.Generic.List<Test> Tests
+        {
+            get => _tests;
+            set => _tests = value ?? new System.Collections.Generic.List<Test>();
+        }
+
+        public System.Collections.Generic.List<Exam> Exams
         {
             get => _exams;
-            set => _exams = value ?? Array.Empty<Exam>();
+            set => _exams = value ?? new System.Collections.Generic.List<Exam>();
         }
 
         public double AverageGrade
         {
             get
             {
-                if (_exams == null || _exams.Length == 0) return 0.0;
+                if (_exams == null || _exams.Count == 0) return 0.0;
                 return _exams.Average(e => e.Score);
             }
         }
@@ -78,16 +87,20 @@ namespace LabVariant1
         public void AddExams(params Exam[] exams)
         {
             if (exams == null || exams.Length == 0) return;
-            var list = new Exam[_exams.Length + exams.Length];
-            Array.Copy(_exams, list, _exams.Length);
-            Array.Copy(exams, 0, list, _exams.Length, exams.Length);
-            _exams = list;
+            _exams.AddRange(exams);
+        }
+
+        public void AddTests(params Test[] tests)
+        {
+            if (tests == null || tests.Length == 0) return;
+            _tests.AddRange(tests);
         }
 
         public override string ToString()
         {
-            var examsText = _exams.Length == 0 ? "No exams" : string.Join("; ", _exams.Select(e => e.ToString()));
-            return $"{_person}\nEducation: {_education}, Group: {_groupNumber}\nExams: {examsText}";
+            var examsText = _exams.Count == 0 ? "No exams" : string.Join("; ", _exams.Select(e => e.ToString()));
+            var testsText = _tests.Count == 0 ? "No tests" : string.Join("; ", _tests.Select(t => t.ToString()));
+            return $"{_person}\nEducation: {_education}, Group: {_groupNumber}\nExams: {examsText}\nTests: {testsText}";
         }
 
         public virtual string ToShortString()
@@ -104,10 +117,12 @@ namespace LabVariant1
         public virtual object DeepCopy()
         {
             var personCopy = (Person)_person.DeepCopy();
-            var examsCopy = _exams?.Select(e => (Exam)e.DeepCopy()).ToArray() ?? Array.Empty<Exam>();
+            var examsCopy = _exams?.Select(e => (Exam)e.DeepCopy()).ToList() ?? new System.Collections.Generic.List<Exam>();
+            var testsCopy = _tests?.Select(t => new Test(t.Subject, t.Passed, t.Date)).ToList() ?? new System.Collections.Generic.List<Test>();
             var copy = new Student(personCopy, _education, _groupNumber)
             {
-                Exams = examsCopy
+                Exams = examsCopy,
+                Tests = testsCopy
             };
             return copy;
         }
