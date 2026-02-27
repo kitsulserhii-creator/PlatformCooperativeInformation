@@ -7,6 +7,9 @@ namespace LabVariant1
     public class StudentCollection
     {
         private List<Student> _students = new List<Student>();
+        public string Name { get; set; } = "DefaultCollection";
+        public event StudentListHandler? StudentCountChanged;
+        public event StudentListHandler? StudentReferenceChanged;
 
         public StudentCollection()
         {
@@ -32,7 +35,11 @@ namespace LabVariant1
         public void AddStudents(params Student[] students)
         {
             if (students == null || students.Length == 0) return;
-            _students.AddRange(students);
+            foreach (var s in students)
+            {
+                _students.Add(s);
+                StudentCountChanged?.Invoke(this, new StudentListHandlerEventArgs(Name, "Added student", s));
+            }
         }
 
         public override string ToString()
@@ -85,5 +92,23 @@ namespace LabVariant1
         }
 
         public List<Student> ToList() => new List<Student>(_students);
+
+        public Student this[int index]
+        {
+            get => _students[index];
+            set
+            {
+                _students[index] = value;
+                StudentReferenceChanged?.Invoke(this, new StudentListHandlerEventArgs(Name, $"Replaced student at index", value, index));
+            }
+        }
+
+        public void Remove(int index)
+        {
+            if (index < 0 || index >= _students.Count) return;
+            var s = _students[index];
+            _students.RemoveAt(index);
+            StudentCountChanged?.Invoke(this, new StudentListHandlerEventArgs(Name, "Removed student", s, index));
+        }
     }
 }
