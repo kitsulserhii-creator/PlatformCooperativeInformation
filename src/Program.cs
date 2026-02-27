@@ -84,6 +84,9 @@ namespace LabVariant1
             var tests = new TestCollections(1000);
             tests.MeasureSearches();
 
+            var lab4 = new TestCollectionsLab4(1000);
+            lab4.RunAll(5);
+
             
             Console.WriteLine();
             Console.WriteLine("Timing array element operations. Enter nRows and nColumns separated by space (e.g. 100 100):");
