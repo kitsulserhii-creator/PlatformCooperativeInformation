@@ -53,7 +53,7 @@ namespace LabVariant1
                 {
                     personKey = _persons[idx];
                     strKey = _strings[idx];
-                    label = idx == 0 ? "first" : idx == n/2 ? "middle" : "last";
+                    label = idx == 0 ? "first" : idx == n / 2 ? "middle" : "last";
                 }
                 else
                 {
@@ -63,36 +63,35 @@ namespace LabVariant1
                 }
 
                 Console.WriteLine($"\nSearching for {label} element:");
-                var sw = Stopwatch.StartNew();
-                bool inPersons = _persons.Contains(personKey);
-                sw.Stop();
-                Console.WriteLine($"List<Person>.Contains: {inPersons}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
 
-                sw.Restart();
-                bool inStrings = _strings.Contains(strKey);
-                sw.Stop();
-                Console.WriteLine($"List<string>.Contains: {inStrings}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                var (t1, r1) = TimeFunc(() => _persons.Contains(personKey));
+                Console.WriteLine($"List<Person>.Contains: {r1}, Time(ms): {t1}");
 
-                sw.Restart();
-                bool inDictKey = _dictPersonStudent.ContainsKey(personKey);
-                sw.Stop();
-                Console.WriteLine($"Dictionary<Person,Student>.ContainsKey: {inDictKey}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                var (t2, r2) = TimeFunc(() => _strings.Contains(strKey));
+                Console.WriteLine($"List<string>.Contains: {r2}, Time(ms): {t2}");
 
-                sw.Restart();
-                bool inDictValue = _dictPersonStudent.ContainsValue(_dictPersonStudent.ContainsKey(personKey) ? _dictPersonStudent[personKey] : null);
-                sw.Stop();
-                Console.WriteLine($"Dictionary<Person,Student>.ContainsValue: {inDictValue}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                var (t3, r3) = TimeFunc(() => _dictPersonStudent.ContainsKey(personKey));
+                Console.WriteLine($"Dictionary<Person,Student>.ContainsKey: {r3}, Time(ms): {t3}");
 
-                sw.Restart();
-                bool inDictStrKey = _dictStringStudent.ContainsKey(strKey);
-                sw.Stop();
-                Console.WriteLine($"Dictionary<string,Student>.ContainsKey: {inDictStrKey}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                var hasPersonValue = _dictPersonStudent.TryGetValue(personKey, out var personVal);
+                var (t4, r4) = hasPersonValue ? TimeFunc(() => _dictPersonStudent.ContainsValue(personVal!)) : (0.0, false);
+                Console.WriteLine($"Dictionary<Person,Student>.ContainsValue: {r4}, Time(ms): {t4}");
 
-                sw.Restart();
-                bool inDictStrVal = _dictStringStudent.ContainsValue(_dictStringStudent.ContainsKey(strKey) ? _dictStringStudent[strKey] : null);
-                sw.Stop();
-                Console.WriteLine($"Dictionary<string,Student>.ContainsValue: {inDictStrVal}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                var (t5, r5) = TimeFunc(() => _dictStringStudent.ContainsKey(strKey));
+                Console.WriteLine($"Dictionary<string,Student>.ContainsKey: {r5}, Time(ms): {t5}");
+
+                var hasStrValue = _dictStringStudent.TryGetValue(strKey, out var strVal);
+                var (t6, r6) = hasStrValue ? TimeFunc(() => _dictStringStudent.ContainsValue(strVal!)) : (0.0, false);
+                Console.WriteLine($"Dictionary<string,Student>.ContainsValue: {r6}, Time(ms): {t6}");
             }
+        }
+
+        private static (double elapsedMs, T result) TimeFunc<T>(Func<T> func)
+        {
+            var sw = Stopwatch.StartNew();
+            var res = func();
+            sw.Stop();
+            return (sw.Elapsed.TotalMilliseconds, res);
         }
     }
 }
