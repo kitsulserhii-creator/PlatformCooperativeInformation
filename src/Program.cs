@@ -87,6 +87,31 @@ namespace LabVariant1
             var lab4 = new TestCollectionsLab4(1000);
             lab4.RunAll(5);
 
+            Console.WriteLine("\n--- Lab5: StudentCollection with events demo ---");
+            var coll1 = new StudentCollection() { Name = "GroupA" };
+            var coll2 = new StudentCollection() { Name = "GroupB" };
+
+            var journal1 = new Journal();
+            var journal2 = new Journal();
+
+            journal1.Subscribe(coll1);
+            journal2.SubscribeReference(coll1);
+            journal2.SubscribeCount(coll2);
+
+            coll1.AddDefaults();
+            coll1.AddStudents(new Student(new Person("Anna", "Kovalenko", new DateTime(2002,1,1)), Education.Bachelor, 303));
+            coll1.Remove(1);
+            coll1[0] = new Student(new Person("Replacement", "Student", new DateTime(2000,2,2)), Education.Master, 111);
+
+            coll2.AddDefaults();
+            coll2.AddStudents(new Student(new Person("Boris", "Bondar", new DateTime(2001,4,4)), Education.Bachelor, 404));
+            coll2.Remove(0);
+
+            Console.WriteLine("Journal 1 (subscribed to coll1 count+reference):");
+            Console.WriteLine(journal1.ToString());
+            Console.WriteLine("\nJournal 2 (subscribed to coll1 reference and coll2 count):");
+            Console.WriteLine(journal2.ToString());
+
             
             Console.WriteLine();
             Console.WriteLine("Timing array element operations. Enter nRows and nColumns separated by space (e.g. 100 100):");
