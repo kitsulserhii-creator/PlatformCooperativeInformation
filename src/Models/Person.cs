@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace LabVariant1
 {
@@ -40,6 +41,7 @@ namespace LabVariant1
             init => _birthDate = value;
         }
 
+        [JsonIgnore]
         public DateTime Date
         {
             get => BirthDate;

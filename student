@@ -1,0 +1,32 @@
+{
+  "PersonData": {
+    "FirstName": "Mykola",
+    "LastName": "Lysenko",
+    "BirthDate": "2001-07-15T00:00:00"
+  },
+  "EducationForm": 0,
+  "GroupNumber": 301,
+  "Tests": [],
+  "Exams": [
+    {
+      "Subject": "Algorithms",
+      "Score": 10,
+      "Date": "2025-06-01T00:00:00"
+    },
+    {
+      "Subject": "Databases",
+      "Score": 87,
+      "Date": "2025-06-15T00:00:00"
+    },
+    {
+      "Subject": "Chemistry",
+      "Score": 88,
+      "Date": "2025-07-01T00:00:00"
+    },
+    {
+      "Subject": "History",
+      "Score": 75,
+      "Date": "2025-08-01T00:00:00"
+    }
+  ]
+}

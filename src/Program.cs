@@ -6,7 +6,7 @@ namespace LabVariant1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Lab Variant 1 - Student/Exam demo (equality, hashing, deep copy)");
+            Console.WriteLine("LabVariant1 demo");
 
             
             var p1 = new Person("Ivan", "Petrenko", new DateTime(2000, 5, 10));
@@ -23,12 +23,12 @@ namespace LabVariant1
                 new Exam("Physics", 88, DateTime.Now.AddDays(-20)),
                 new Exam("Programming", 100, DateTime.Now.AddDays(-10))
             );
-            Console.WriteLine("Original student:");
+            Console.WriteLine("Original student");
             Console.WriteLine(student.ToString());
 
             
             var copy = (Student)student.DeepCopy();
-            Console.WriteLine("Deep-copied student:");
+            Console.WriteLine("Deep copy");
             Console.WriteLine(copy.ToString());
 
             
@@ -36,10 +36,10 @@ namespace LabVariant1
             {
                 student.Exams[0].Score = 50;
             }
-            Console.WriteLine("After modifying original student's first exam score:");
-            Console.WriteLine("Original:");
+            Console.WriteLine("After modification");
+            Console.WriteLine("Original");
             Console.WriteLine(student.ToString());
-            Console.WriteLine("Copy (should be unchanged):");
+            Console.WriteLine("Copy");
             Console.WriteLine(copy.ToString());
 
             
@@ -49,25 +49,25 @@ namespace LabVariant1
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                Console.WriteLine($"Caught exception for invalid group: {ex.Message}");
+                Console.WriteLine($"Invalid group: {ex.Message}");
             }
 
             
-            Console.WriteLine("\n--- StudentCollection demo ---");
+            Console.WriteLine("--- StudentCollection demo ---");
             var coll = new StudentCollection();
             coll.AddDefaults();
             Console.WriteLine("Students (short):");
             Console.WriteLine(coll.ToShortString());
 
-            Console.WriteLine("\nSort by surname:");
+            Console.WriteLine("Sort by surname:");
             coll.SortBySurname();
             Console.WriteLine(coll.ToShortString());
 
-            Console.WriteLine("\nSort by birth date:");
+            Console.WriteLine("Sort by birth date:");
             coll.SortByBirthDate();
             Console.WriteLine(coll.ToShortString());
 
-            Console.WriteLine("\nSort by average grade:");
+            Console.WriteLine("Sort by average grade:");
             coll.SortByAverage();
             Console.WriteLine(coll.ToShortString());
 
@@ -80,7 +80,7 @@ namespace LabVariant1
             foreach (var s in high) Console.WriteLine(s.ToShortString());
 
             
-            Console.WriteLine("\n--- TestCollections demo (search measurements) ---");
+            Console.WriteLine("--- TestCollections demo ---");
             var tests = new TestCollections(1000);
             tests.MeasureSearches();
 
@@ -113,8 +113,7 @@ namespace LabVariant1
             Console.WriteLine(journal2.ToString());
 
             
-            Console.WriteLine();
-            Console.WriteLine("Timing array element operations. Enter nRows and nColumns separated by space (e.g. 100 100):");
+            Console.WriteLine("Enter nRows nCols:");
             var input = Console.ReadLine() ?? "10 10";
             var parts = input.Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length < 2) parts = new[] { "10", "10" };
@@ -122,7 +121,7 @@ namespace LabVariant1
             if (!int.TryParse(parts[1], out var nCols)) nCols = 10;
 
             int total = nRows * nCols;
-            Console.WriteLine($"nRows={nRows}, nCols={nCols}, total elements={total}");
+            Console.WriteLine($"nRows={nRows}, nCols={nCols}, total={total}");
 
             
             var rnd = new Random(42);
@@ -167,8 +166,102 @@ namespace LabVariant1
             after = Environment.TickCount;
             Console.WriteLine($"Two-dimensional jagged array time (ms): {after - before}");
 
-            Console.WriteLine("Done. Press Enter to exit.");
+            Console.WriteLine("Lab6 Serialization:");
+
+            var lab6Student = new SerializableStudent(
+                new Person("Mykola", "Lysenko", new DateTime(2001, 7, 15)),
+                Education.Master,
+                301);
+            lab6Student.AddExams(
+                new Exam("Algorithms", 92, new DateTime(2025, 6, 1)),
+                new Exam("Databases", 87, new DateTime(2025, 6, 15)));
+
+            Console.WriteLine("SerializableStudent original:");
+            Console.WriteLine(lab6Student);
+            var lab6Copy = lab6Student.DeepCopy();
+            Console.WriteLine("Deep copy:");
+            Console.WriteLine(lab6Copy);
+            lab6Student.Exams[0].Score = 10;
+            Console.WriteLine($"After changing original's first exam score to 10:");
+            Console.WriteLine($"  Original: {lab6Student.Exams[0]}");
+            Console.WriteLine($"  Copy: {lab6Copy.Exams[0]}");
+
+            Console.Write("Enter filename for save/load: ");
+            string lab6file = Console.ReadLine()?.Trim() ?? "student";
+            if (string.IsNullOrWhiteSpace(lab6file)) lab6file = "student";
+
+            if (!System.IO.File.Exists(lab6file))
+            {
+                lab6Student.Save(lab6file);
+                Console.WriteLine("File created.");
+            }
+            else
+            {
+                bool loaded = lab6Student.Load(lab6file);
+                Console.WriteLine(loaded ? "Loaded." : "Load failed.");
+            }
+
+            Console.WriteLine("Student T:");
+            Console.WriteLine(lab6Student);
+
+            Console.WriteLine("AddFromConsole → Save → print");
+            lab6Student.AddFromConsole();
+            lab6Student.Save(lab6file);
+            Console.WriteLine("Student T after AddFromConsole + Save:");
+            Console.WriteLine(lab6Student);
+
+            Console.WriteLine("Static Load → AddFromConsole → Static Save");
+            bool sLoaded = SerializableStudent.Load(lab6file, lab6Student);
+            Console.WriteLine(sLoaded ? "Static Load: OK." : "Static Load failed.");
+            lab6Student.AddFromConsole();
+            SerializableStudent.Save(lab6file, lab6Student);
+
+            Console.WriteLine("Final state of Student T:");
+            Console.WriteLine(lab6Student);
+
+            Console.WriteLine("Done. Press Enter.");
             Console.ReadLine();
+            ConsoleEx.WriteHeader("--- Lab7: Couple demo ---");
+            if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+            {
+                ConsoleEx.WriteWarning("Console demo is disabled on Sundays.");
+                return;
+            }
+
+            var male = new HumanMale("Petro", "Shevchenko", new DateTime(1995, 1, 1));
+            var studentGirl = new Girl("Oksana", "Bondar", new DateTime(1998, 5, 5));
+            var pretty = new PrettyGirl("Irina", "Khmelyuk", new DateTime(1997, 7, 7));
+
+            RunPair(male, studentGirl);
+            ConsoleEx.WriteInfo("Press Enter for next pair, or press Q/F10 to quit.");
+            var k = Console.ReadKey(true);
+            if (k.Key == ConsoleKey.Q || k.Key == ConsoleKey.F10) return;
+
+            RunPair(male, pretty);
+            ConsoleEx.WriteSuccess("Pairing demo finished.");
+        }
+
+        private static void RunPair(Human a, Human b)
+        {
+            try
+            {
+                ConsoleEx.WriteHeader($"Trying to couple {a.GetType().Name} ({a.Name}) and {b.GetType().Name} ({b.Name})");
+                var child = Matchmaker.Couple(a, b);
+                if (child == null)
+                {
+                    ConsoleEx.WriteWarning("No mutual sympathy or child creation failed.");
+                    return;
+                }
+                ConsoleEx.WriteSuccess($"Child created: {child.Name} (Type: {child.GetType().Name})");
+            }
+            catch (SameGenderException ex)
+            {
+                ConsoleEx.WriteError($"Same gender exception: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                ConsoleEx.WriteError($"Unexpected error during coupling: {ex.Message}");
+            }
         }
     }
 }

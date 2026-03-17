@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace LabVariant1
 {
@@ -51,7 +52,7 @@ namespace LabVariant1
         public int GroupNumber
         {
             get => _groupNumber;
-            init
+            set
             {
                 if (value < 100 || value > 699) throw new ArgumentOutOfRangeException(nameof(GroupNumber), "Group number must be between 100 and 699.");
                 _groupNumber = value;
@@ -70,6 +71,7 @@ namespace LabVariant1
             set => _exams = value ?? new System.Collections.Generic.List<Exam>();
         }
 
+        [JsonIgnore]
         public double AverageGrade
         {
             get
@@ -108,6 +110,7 @@ namespace LabVariant1
             return $"{_person}\nEducation: {_education}, Group: {_groupNumber}, Avg: {AverageGrade:F2}";
         }
 
+        [JsonIgnore]
         public DateTime Date
         {
             get => PersonData.BirthDate;
