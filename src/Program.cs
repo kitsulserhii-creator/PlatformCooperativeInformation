@@ -1,10 +1,13 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
+using LabVariant1.Lab8;
 
 namespace LabVariant1
 {
     internal static class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("LabVariant1 demo");
 
@@ -225,20 +228,24 @@ namespace LabVariant1
             if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
             {
                 ConsoleEx.WriteWarning("Console demo is disabled on Sundays.");
-                return;
+            }
+            else
+            {
+                var male = new HumanMale("Petro", "Shevchenko", new DateTime(1995, 1, 1));
+                var studentGirl = new Girl("Oksana", "Bondar", new DateTime(1998, 5, 5));
+                var pretty = new PrettyGirl("Irina", "Khmelyuk", new DateTime(1997, 7, 7));
+
+                RunPair(male, studentGirl);
+                ConsoleEx.WriteInfo("Press Enter for next pair, or press Q/F10 to quit.");
+                var k = Console.ReadKey(true);
+                if (k.Key != ConsoleKey.Q && k.Key != ConsoleKey.F10)
+                {
+                    RunPair(male, pretty);
+                    ConsoleEx.WriteSuccess("Pairing demo finished.");
+                }
             }
 
-            var male = new HumanMale("Petro", "Shevchenko", new DateTime(1995, 1, 1));
-            var studentGirl = new Girl("Oksana", "Bondar", new DateTime(1998, 5, 5));
-            var pretty = new PrettyGirl("Irina", "Khmelyuk", new DateTime(1997, 7, 7));
-
-            RunPair(male, studentGirl);
-            ConsoleEx.WriteInfo("Press Enter for next pair, or press Q/F10 to quit.");
-            var k = Console.ReadKey(true);
-            if (k.Key == ConsoleKey.Q || k.Key == ConsoleKey.F10) return;
-
-            RunPair(male, pretty);
-            ConsoleEx.WriteSuccess("Pairing demo finished.");
+            await DemoLab8Async();
         }
 
         private static void RunPair(Human a, Human b)
@@ -262,6 +269,115 @@ namespace LabVariant1
             {
                 ConsoleEx.WriteError($"Unexpected error during coupling: {ex.Message}");
             }
+        }
+
+        // ── Lab 8 ─────────────────────────────────────────────────────────────
+
+        private static async Task DemoLab8Async()
+        {
+            Console.WriteLine();
+            ConsoleEx.WriteHeader("--- Lab 8: Matrix Multiplication via TPL Dataflow (Variant 1) ---");
+
+            Console.Write("  Matrix A — rows cols (e.g. 500 100): ");
+            var (aRows, aCols) = ParseMatrixDimensions(Console.ReadLine());
+
+            Console.Write("  Matrix B — rows cols (e.g. 100 500): ");
+            var (bRows, bCols) = ParseMatrixDimensions(Console.ReadLine());
+
+            if (aCols != bRows)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"  Incompatible dimensions: A({aRows}x{aCols}) x B({bRows}x{bCols})");
+                Console.WriteLine($"  A.Cols ({aCols}) must equal B.Rows ({bRows}).");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.Write($"  Generating A({aRows}x{aCols}) and B({bRows}x{bCols})... ");
+            var swGen = Stopwatch.StartNew();
+            var a = MatrixGenerator.Generate(aRows, aCols, seed: 42);
+            var b = MatrixGenerator.Generate(bRows, bCols, seed: 84);
+            swGen.Stop();
+            Console.WriteLine($"done in {swGen.Elapsed.TotalMilliseconds:F1} ms.");
+
+            Console.WriteLine("A (preview):");
+            Console.WriteLine(a);
+            Console.WriteLine("B (preview):");
+            Console.WriteLine(b);
+
+            int processorCount = Environment.ProcessorCount;
+            Console.WriteLine($"  Result will be {aRows}x{bCols}.  Pipeline parallelism: {processorCount} CPU(s).");
+            Console.WriteLine("  Press Ctrl+C to cancel.");
+
+            using var cts = new CancellationTokenSource();
+            ConsoleCancelEventHandler ctrlCHandler = (_, e) =>
+            {
+                e.Cancel = true;   // keep the process alive
+                cts.Cancel();
+                Console.WriteLine("\n  [Ctrl+C received — cancelling pipeline]");
+            };
+            Console.CancelKeyPress += ctrlCHandler;
+
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                var result = await DataFlowMatrixMultiplier.MultiplyAsync(
+                    a, b, cts.Token, processorCount);
+                sw.Stop();
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"  Completed in {sw.Elapsed.TotalMilliseconds:F1} ms.");
+                Console.ResetColor();
+
+                Console.WriteLine("Result C = A x B (preview):");
+                Console.WriteLine(result);
+
+                // Quick self-check: multiply A by identity of matching size.
+                // A x I_K should equal A (compare first element).
+                Console.Write("  Self-check A x Identity... ");
+                var identity = MatrixGenerator.Identity(aCols);
+                var check    = await DataFlowMatrixMultiplier.MultiplyAsync(
+                    a, identity, cts.Token, processorCount);
+                double diff = Math.Abs(check[0, 0] - a[0, 0]);
+                if (diff < 1e-9)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"PASS (delta = {diff:E2})");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"FAIL (delta = {diff:E2})");
+                }
+                Console.ResetColor();
+            }
+            catch (OperationCanceledException)
+            {
+                sw.Stop();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"  Cancelled after {sw.Elapsed.TotalMilliseconds:F1} ms.");
+                Console.ResetColor();
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"  Error: {ex.Message}");
+                Console.ResetColor();
+            }
+            finally
+            {
+                Console.CancelKeyPress -= ctrlCHandler;
+            }
+        }
+
+        private static (int rows, int cols) ParseMatrixDimensions(string? input)
+        {
+            var parts = (input ?? string.Empty)
+                .Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            int rows = parts.Length >= 1 && int.TryParse(parts[0], out var r) ? r : 10;
+            int cols = parts.Length >= 2 && int.TryParse(parts[1], out var c) ? c : 10;
+            return (Math.Max(rows, 1), Math.Max(cols, 1));
         }
     }
 }
