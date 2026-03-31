@@ -53,7 +53,7 @@ namespace LabVariant1
                 {
                     personKey = _persons[idx];
                     strKey = _strings[idx];
-                    label = idx == 0 ? "first" : idx == n/2 ? "middle" : "last";
+                    label = idx == 0 ? "first" : idx == n / 2 ? "middle" : "last";
                 }
                 else
                 {
@@ -66,32 +66,35 @@ namespace LabVariant1
                 var sw = Stopwatch.StartNew();
                 bool inPersons = _persons.Contains(personKey);
                 sw.Stop();
-                Console.WriteLine($"List<Person>.Contains: {inPersons}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  List<Person>.Contains:                    {inPersons,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
 
                 sw.Restart();
                 bool inStrings = _strings.Contains(strKey);
                 sw.Stop();
-                Console.WriteLine($"List<string>.Contains: {inStrings}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  List<string>.Contains:                    {inStrings,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
 
                 sw.Restart();
                 bool inDictKey = _dictPersonStudent.ContainsKey(personKey);
                 sw.Stop();
-                Console.WriteLine($"Dictionary<Person,Student>.ContainsKey: {inDictKey}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  Dictionary<Person,Student>.ContainsKey:   {inDictKey,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
 
+                // ContainsValue requires a candidate value; retrieve it first (outside measurement)
+                _dictPersonStudent.TryGetValue(personKey, out var personValue);
                 sw.Restart();
-                bool inDictValue = _dictPersonStudent.ContainsValue(_dictPersonStudent.ContainsKey(personKey) ? _dictPersonStudent[personKey] : null);
+                bool inDictValue = personValue is not null && _dictPersonStudent.ContainsValue(personValue);
                 sw.Stop();
-                Console.WriteLine($"Dictionary<Person,Student>.ContainsValue: {inDictValue}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  Dictionary<Person,Student>.ContainsValue: {inDictValue,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
 
                 sw.Restart();
                 bool inDictStrKey = _dictStringStudent.ContainsKey(strKey);
                 sw.Stop();
-                Console.WriteLine($"Dictionary<string,Student>.ContainsKey: {inDictStrKey}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  Dictionary<string,Student>.ContainsKey:   {inDictStrKey,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
 
+                _dictStringStudent.TryGetValue(strKey, out var strValue);
                 sw.Restart();
-                bool inDictStrVal = _dictStringStudent.ContainsValue(_dictStringStudent.ContainsKey(strKey) ? _dictStringStudent[strKey] : null);
+                bool inDictStrVal = strValue is not null && _dictStringStudent.ContainsValue(strValue);
                 sw.Stop();
-                Console.WriteLine($"Dictionary<string,Student>.ContainsValue: {inDictStrVal}, Time(ms): {sw.Elapsed.TotalMilliseconds}");
+                Console.WriteLine($"  Dictionary<string,Student>.ContainsValue: {inDictStrVal,-5}  {sw.Elapsed.TotalMilliseconds:F4} ms");
             }
         }
     }

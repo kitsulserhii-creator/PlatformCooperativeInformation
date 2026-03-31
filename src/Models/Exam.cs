@@ -10,17 +10,14 @@ namespace LabVariant1
 
         public Exam(string subject, int score, DateTime date)
         {
-            Subject = subject;
-            Score = score;
-            Date = date;
+            if (score < 0 || score > 100)
+                throw new ArgumentOutOfRangeException(nameof(score), score, "Score must be between 0 and 100.");
+            Subject = subject ?? throw new ArgumentNullException(nameof(subject));
+            Score   = score;
+            Date    = date;
         }
 
-        public Exam()
-        {
-            Subject = string.Empty;
-            Score = 0;
-            Date = DateTime.MinValue;
-        }
+        public Exam() : this(string.Empty, 0, DateTime.MinValue) { }
 
         public object DeepCopy()
         {

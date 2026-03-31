@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LabVariant1
@@ -15,31 +16,24 @@ namespace LabVariant1
         private Person _person;
         private Education _education;
         private int _groupNumber;
-        private System.Collections.Generic.List<Test> _tests;
-        private System.Collections.Generic.List<Exam> _exams;
+        private readonly List<Test> _tests;
+        private readonly List<Exam> _exams;
 
         public Student(Person person, Education education, int groupNumber)
         {
-            _person = person ?? new Person();
+            _person    = person ?? new Person();
             _education = education;
             GroupNumber = groupNumber;
-            _tests = new System.Collections.Generic.List<Test>();
-            _exams = new System.Collections.Generic.List<Exam>();
+            _tests = new List<Test>();
+            _exams = new List<Exam>();
         }
 
-        public Student()
-        {
-            _person = new Person();
-            _education = Education.Bachelor;
-            _groupNumber = 0;
-            _tests = new System.Collections.Generic.List<Test>();
-            _exams = new System.Collections.Generic.List<Exam>();
-        }
+        public Student() : this(new Person(), Education.Bachelor, 100) { }
 
         public Person PersonData
         {
             get => _person;
-            set => _person = value ?? new Person();
+            set => _person = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         public Education EducationForm
@@ -58,26 +52,14 @@ namespace LabVariant1
             }
         }
 
-        public System.Collections.Generic.List<Test> Tests
-        {
-            get => _tests;
-            set => _tests = value ?? new System.Collections.Generic.List<Test>();
-        }
+        /// <summary>Read-only view of tests. Use <see cref="AddTests"/> to add.</summary>
+        public IReadOnlyList<Test> Tests => _tests;
 
-        public System.Collections.Generic.List<Exam> Exams
-        {
-            get => _exams;
-            set => _exams = value ?? new System.Collections.Generic.List<Exam>();
-        }
+        /// <summary>Read-only view of exams. Use <see cref="AddExams"/> to add.</summary>
+        public IReadOnlyList<Exam> Exams => _exams;
 
-        public double AverageGrade
-        {
-            get
-            {
-                if (_exams == null || _exams.Count == 0) return 0.0;
-                return _exams.Average(e => e.Score);
-            }
-        }
+        public double AverageGrade =>
+            _exams.Count == 0 ? 0.0 : _exams.Average(e => e.Score);
 
         public bool this[Education education]
         {
@@ -117,13 +99,9 @@ namespace LabVariant1
         public virtual object DeepCopy()
         {
             var personCopy = (Person)_person.DeepCopy();
-            var examsCopy = _exams?.Select(e => (Exam)e.DeepCopy()).ToList() ?? new System.Collections.Generic.List<Exam>();
-            var testsCopy = _tests?.Select(t => new Test(t.Subject, t.Passed, t.Date)).ToList() ?? new System.Collections.Generic.List<Test>();
-            var copy = new Student(personCopy, _education, _groupNumber)
-            {
-                Exams = examsCopy,
-                Tests = testsCopy
-            };
+            var copy = new Student(personCopy, _education, _groupNumber);
+            copy.AddExams(_exams.Select(e => (Exam)e.DeepCopy()).ToArray());
+            copy.AddTests(_tests.Select(t => (Test)t.DeepCopy()).ToArray());
             return copy;
         }
     }

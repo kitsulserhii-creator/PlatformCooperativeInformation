@@ -2,29 +2,24 @@ using System;
 
 namespace LabVariant1
 {
-    public class Test
+    public class Test : IDateAndCopy
     {
         public string Subject { get; set; }
         public bool Passed { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; init; }
 
         public Test(string subject, bool passed, DateTime date)
         {
             Subject = subject;
-            Passed = passed;
-            Date = date;
+            Passed  = passed;
+            Date    = date;
         }
 
-        public Test()
-        {
-            Subject = string.Empty;
-            Passed = false;
-            Date = DateTime.MinValue;
-        }
+        public Test() : this(string.Empty, false, DateTime.MinValue) { }
 
-        public override string ToString()
-        {
-            return $"{Subject}: {(Passed ? "Passed" : "Failed")} ({Date:yyyy-MM-dd})";
-        }
+        public object DeepCopy() => new Test(Subject, Passed, Date);
+
+        public override string ToString() =>
+            $"{Subject}: {(Passed ? "Passed" : "Failed")} ({Date:yyyy-MM-dd})";
     }
 }

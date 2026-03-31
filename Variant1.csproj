@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- compare_remote/ is a separate reference project; exclude it from this project's compile glob -->
+  <ItemGroup>
+    <Compile Remove="compare_remote/**" />
+  </ItemGroup>
+
 </Project>
